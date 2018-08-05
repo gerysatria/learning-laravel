@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use App\Http\Requests;
 use App\Http\Requests\UsersRequest;
@@ -13,6 +14,13 @@ use App\Photo;
 
 class AdminUsersController extends Controller
 {
+    
+    
+    public function __construct()
+    {
+        $this->middleware('admin'); 
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -23,8 +31,9 @@ class AdminUsersController extends Controller
         //
         
         $users = User::all();
+        $photo = new Photo();
         
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'photo'));
     }
 
     /**
@@ -165,6 +174,15 @@ class AdminUsersController extends Controller
     public function destroy($id)
     {
         //
-//         unlink(public_path() . $photo->file);    
+        $user = User::findOrFail($id);
+        
+        unlink(public_path(). $user->photo->file);
+        
+        Session::flash('deleted_user', 'The User '. $user->name .' has been deleted');
+        
+        $user->delete();
+        
+        return redirect('/admin/users');
+   
     }
 }
