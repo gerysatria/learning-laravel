@@ -24,4 +24,8 @@ class Photo extends Model
         return self::$placeholder;
     }
     
+    public function post(){
+        return $this->hasOne('App\Post');
+    }
+    
 }
